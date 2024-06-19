@@ -2,6 +2,7 @@
 * [ ] waveplot
 * [ ] wordsegmentLCS
 * [ ] segment
+* [ ] dedup
 * [ ] triphone
 
 
