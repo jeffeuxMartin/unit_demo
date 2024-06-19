@@ -423,3 +423,11 @@ idx3 = st.selectbox(
 if 1:d(tabres[tabel_optinos.index(idx3)])
 
 if 0:idx1 = st.selectbox('Select a column', df.columns)
+
+#########3 entropy
+#########3 wnhsu code
+
+def entropy(p):
+    return -np.sum(p * np.log(p + 1e-10))
+
+
