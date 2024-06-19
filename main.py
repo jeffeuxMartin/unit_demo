@@ -335,6 +335,17 @@ if idx2 == "Pr_(p, u)":
     myplotter(newdf       , 
               hb=rescnt
               )
+    ## pmi = np.log(p_xy / np.matmul(p_x, p_y) + 1e-8)
+    ## mi = (p_xy * pmi).sum()
+    # st.write("MI: {}".format(
+    #     (newdf * np.log(newdf / np.matmul(newdf.sum(axis=1)[:, None], newdf.sum(axis=0)[None, :]) + 1e-8)).sum()
+    # ))
+    p_x = newdf.values.sum(axis=1)[:, None]
+    p_y = newdf.values.sum(axis=0)[None]
+    p_xy = newdf.values
+    pmi = np.log(p_xy / np.matmul(p_x, p_y) + 1e-8)
+    mi = (p_xy * pmi).sum()
+    st.write("MI: {}".format(mi))
     # st.write(newdf.sum().sum())
     axqx=int(st.selectbox('Axis', ['row_first', 'col_first']) == 'row_first')
     vv = newdf.sum(axis=axqx)
@@ -345,6 +356,12 @@ if idx2 == "Pr_(p, u)":
     plt.clf()
     grapap = plt.figure(figsize=(10, 5))
     plt.bar(vv.index, vv.values)
+    def myentropy(p):
+        return -np.sum(p * np.log(p + 1e-10))
+    st.write("Phoneme Entropy: {}".format(myentropy(vv.values)))
+    # st.write(col_max.sum() / total_frames)
+    st.write("Phoneme Purity: {}".format(col_max.sum() / total_frames)) 
+    # st.write(vv.values)
     plt.xticks(rotation=75, fontsize=8)
     st.pyplot(grapap)
 
@@ -357,6 +374,8 @@ if idx2 == "Pr_(p, u)":
     grapap = plt.figure(figsize=(10, 5))
     plt.bar(vv.index, vv.values)
     plt.xticks(rotation=75, fontsize=8)
+    st.write("Unit Entropy: {}".format(myentropy(vv.values)))
+    st.write("Unit Purity: {}".format(row_max.sum() / total_frames))
     st.pyplot(grapap)
 
     # slice a column to plot
@@ -372,11 +391,17 @@ if idx2 == "Pr_(p, u)":
     )
     # matplotlib bar plot
     plt.clf()
+
     grapap = plt.figure(figsize=(10, 5))
     plt.bar(slicedout.index, slicedout.values)
     plt.xticks(rotation=75, fontsize=8)
     plt.title(idx001)
     st.pyplot(grapap)
+    # entropy
+    p_mar = slicedout.values / (slicedout.values.sum())
+    # st.write(p_mar)
+    # st.write(p_mar.sum())
+    st.write("Entropy: {}".format(myentropy(p_mar)))
 
     # slice a column to plot
     newdf2 = newdf.T
@@ -397,6 +422,11 @@ if idx2 == "Pr_(p, u)":
     plt.xticks(rotation=75, fontsize=8)
     plt.title(idx001)
     st.pyplot(grapap)
+    # entropy
+    p_mar = slicedout.values / (slicedout.values.sum())
+    # st.write(p_mar)
+    # st.write(p_mar.sum())
+    st.write("Entropy: {}".format(myentropy(p_mar)))
 
 elif idx2 == "Pr(p | u)":
     st.markdown("#### Pr(p | u) 每個 column 總和為 100 %")
