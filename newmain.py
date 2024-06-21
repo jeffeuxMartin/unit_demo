@@ -8,7 +8,8 @@ import seaborn as sns
 
 @st.cache_resource
 def loaddata(modeltype='hubert', clu=100):
-    data = np.load("C:\\Users\\ChienChengChen\\Desktop\\mymeasure\\analysis_data\\{}\\clu{:03d}\\train-clean-100.npz".format(modeltype, clu) )
+    # data = np.load("C:\\Users\\ChienChengChen\\Desktop\\mymeasure\\analysis_data\\{}\\clu{:03d}\\train-clean-100.npz".format(modeltype, clu) )
+    data = np.load("analysis_data/{}/clu{:03d}/train-clean-100.npz".format(modeltype, clu) )
     
     return data
 
