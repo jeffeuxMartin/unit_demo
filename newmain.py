@@ -290,5 +290,25 @@ plot_heatmap(df1, gropui=True,
                 vb=[6,2,9,3,4,12,3,2],
              )
 plot_heatmap(df)
+
+
+
+
+
 ## note: 重點不是 sort by! 重點是 橫軸、縱軸要呈現，然後找出 top2 of both axis 畫出長條圖
 ## 最後是那個 entropy 直方圖！
+
+# $$$ purtiy
+# $$$ 兩軸的 marginal prob
+# $$$ 個案 selection
+# $$$ [[waveform]])
+#           --> praat
+#           --> duration dedup to Textgrid alg
+#           --> tiers
+#           --> acoustic piece
+
+# $$$$$$ 放上手繪架構圖
+# $$$$$$ 確認找 paper
+# $$$$$$ 寫文章、改前面的 paper
+# $$$$$$ 處理 waveform
+# $$$$$$ (triphone、dedup、word)
