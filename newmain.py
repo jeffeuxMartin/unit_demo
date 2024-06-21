@@ -102,6 +102,8 @@ def plot_heatmap(pp, gropui=None, hb=None, vb=None, ha=True, va=True, annot=Fals
                 ax.text(j+0.5, i+0.5, '%.2f %%' % (pp.iloc[i, j] * 100),
                         ha='center', va='center', color='red', fontsize=18)
     st.pyplot(fig)
+    # close figure
+    plt.close(fig)
 
 # plot_heatmap(data.get('p_xy'))
 # st.write(data.get('p_xy'))
