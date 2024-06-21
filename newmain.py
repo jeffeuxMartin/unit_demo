@@ -288,3 +288,5 @@ plot_heatmap(df1, gropui=True,
                 vb=[6,2,9,3,4,12,3,2],
              )
 plot_heatmap(df)
+## note: 重點不是 sort by! 重點是 橫軸、縱軸要呈現，然後找出 top2 of both axis 畫出長條圖
+## 最後是那個 entropy 直方圖！
