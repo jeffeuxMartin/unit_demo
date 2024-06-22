@@ -273,8 +273,8 @@ if __name__ == "__main__":
         'unit_purity': unit_purity,
         'phn_entropy': phn_entropy,
         'unit_entropy': unit_entropy,
-        'mi': mi,
         'PNMI': mi / phn_entropy,
+        'mi': mi,
         'UNMI': mi / unit_entropy,
     }, index=[0]), hide_index=True)
 
@@ -524,10 +524,13 @@ plot_barplot__series(
         )
 fig = plt.figure(figsize=(10, 5))
 sns.histplot(h_each_phn, 
-            #  bins=int(analysis_obj[1]) // 3, 
              bins=25,
              kde=True,
-             )
+            )
+plt.xlabel('音素熵', fontsize=12, fontdict={'family': 'DFKai-SB', 'weight': 'bold'})
+plt.ylabel('數量', fontsize=12, fontdict={'family': 'DFKai-SB', 'weight': 'bold'})
+plt.title('音素熵分布', fontsize=12, fontdict={'family': 'DFKai-SB', 'weight': 'bold'})
+
 # xmin
 plt.xlim(0, None)
 st.pyplot(fig)
