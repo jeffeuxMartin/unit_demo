@@ -274,11 +274,11 @@ if __name__ == "__main__":
         'phn_entropy': phn_entropy,
         'unit_entropy': unit_entropy,
         'PNMI': mi / phn_entropy,
-        'mi': mi,
-        'UNMI': mi / unit_entropy,
     }, index=[0]), hide_index=True)
 
     st.dataframe(pd.DataFrame({
+        'mi': mi,
+        'UNMI': mi / unit_entropy,
         'ref_segL': data.get('refsegL').tolist(),
         'hyp_segL': data.get('hypsegL').tolist(),
         'p_xy_shape': [data.get('p_xy').shape],
