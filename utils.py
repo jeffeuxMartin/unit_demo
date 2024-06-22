@@ -68,4 +68,4 @@ def entropy欸尻ㄙㄟ(df, entropy_phn, entropy_unit, knowledge_data):
     df = df.T
 
     df1 = df.T[knowledge_data['phn'].to_list()].T
-    return df1, df
+    return df1.iloc[::1, ::-1], df.iloc[::-1, ::-1]

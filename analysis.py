@@ -65,27 +65,27 @@ def plot_heatmap(
         cmap="YlGnBu",
         **options,
     )
-    axis.set_xticklabels(
-        df.columns,
-        rotation=75,
-        fontsize=12,
-        # horizontalalignment='right',
-        minor = False,  # each 1
-    )
+
     axis.set_xticks(
         np.arange(df.shape[1]) + 0.5,
         minor = False,
     )
-
-    axis.set_yticklabels(
-        df.index,
-        rotation=0,
-        fontsize=12,
+    axis.set_xticklabels(
+        df.columns,
+        rotation=75 if df.shape[1] <= 100 else 90,
+        fontsize=12 if df.shape[1] <= 100 else 6,
+        # horizontalalignment='right',
         minor = False,  # each 1
     )
     axis.set_yticks(
         np.arange(df.shape[0]) + 0.5,
         minor = False,
+    )
+    axis.set_yticklabels(
+        df.index,
+        rotation=0,
+        fontsize=12,
+        minor = False,  # each 1
     )
 
     if x_groups is not None:
@@ -223,8 +223,11 @@ if __name__ == "__main__":
         df1,
         y_groups=PHONETIC_GROUP_NUMS,
         vmin=0.0, 
-        # vmax=0.025,
+        vmax=0.025,
         horizontal_highlighted=True,
     )
 
-    plot_heatmap(df)
+    plot_heatmap(
+        df,
+        vmax=0.025,
+    )
