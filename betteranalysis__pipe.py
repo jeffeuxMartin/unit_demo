@@ -490,9 +490,15 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
         sns.histplot(h_units, bins=20,
                     #  kde=True,
                      )
-        plt.xlabel('音素熵', fontsize=12, fontdict={'family': 'DFKai-SB', 'weight': 'bold'})
-        plt.ylabel('數量', fontsize=12, fontdict={'family': 'DFKai-SB', 'weight': 'bold'})
-        plt.title('音素熵分布', fontsize=12, fontdict={'family': 'DFKai-SB', 'weight': 'bold'})
+        from matplotlib.font_manager import FontProperties
+        kai_font = FontProperties(
+            fname='./fonts/BiauKai.ttf',
+            weight='bold', size=12,
+            # fontsize=12, fontdict={'family': 'DFKai-SB', 'weight': 'bold'})
+        )
+        plt.xlabel('音素熵', fontproperties=kai_font)
+        plt.ylabel('數量', fontproperties=kai_font)
+        plt.title('音素熵分布', fontproperties=kai_font)
         plt.xlim(0, None)
         st.pyplot(fig)
         plt.close(fig)
@@ -696,6 +702,11 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
 # region --- Main ---
 modeltype, unit_num = parse_urlargs()
 data = load_data(modeltype, unit_num)
+@st.cache_resource
+def loadtriphone(pathname):
+    return np.load(pathname)
+# data = loadtriphone(
+#     '../mymeasure/tri_hubert_100.npz')
 st.markdown(f"# {modeltype} --> {unit_num:3d} clusters")
 
 # x as unit / hyp

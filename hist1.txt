@@ -1,0 +1,26 @@
+from itertools import groupby
+from tqdm import tqdm
+
+def triphonize(a, b, c):
+    return f"{a}-{b}-{c}"
+
+def make_seq_triphone(seq):
+    triphones = [
+        triphonize('sta', seq[0], seq[1]),
+    ]
+
+    for i in range(len(seq)-2):
+        triphones.append(triphonize(*seq[i:i+3]))
+    triphones.append(triphonize(seq[-2], seq[-1], 'stp'))
+    return (triphones)
+
+def processer(seq):
+    seq = seq.split(',')
+    gg = [(k, len(list(g))) for k, g in groupby(seq)]
+    ggit, ggnum = zip(*gg)
+    ggout = make_seq_triphone(ggit)
+    out = []
+    for it, cnt in zip(ggout, ggnum):
+        out.extend([it] * cnt)
+    out = ','.join(out)
+    return out
