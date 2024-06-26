@@ -54,7 +54,7 @@ def plot_heatmap(
     plt.clf()
     # graph = plt.figure(figsize=(25, 10))
     fig, ax = plt.subplots()
-    fig.set_size_inches(25, 10)
+    fig.set_size_inches(15, 10)
 
     options = {}
     if vmin is not None:
@@ -240,7 +240,10 @@ if __name__ == "__main__":
 
     PHONETIC_GROUPS = (
         knowledge_data['cls'].unique().tolist())
-    PHONETIC_GROUP_NUMS = [6, 2, 9, 3, 4, 12, 3, 2]  # FIXME
+    PHONETIC_GROUP_NUMS = [
+        2,
+        6, 2, 9, 3, 4, 12-2, 3+2, 
+        ]  # FIXME
 
 
     df__joint_prob = pd.DataFrame(
@@ -304,11 +307,14 @@ if __name__ == "__main__":
 
 
     if not DEBUG:
+        dfcool = dfcool.div(
+            dfcool.sum(axis=0), axis=1
+        )
         plot_heatmap(
             dfcool,
             x_groups=resultgrouping,
             y_groups=PHONETIC_GROUP_NUMS,
-            vmin=0.0, vmax=0.025,
+            # vmin=0.0, vmax=0.025,
         )
 
         ##################################
@@ -317,6 +323,41 @@ if __name__ == "__main__":
         ## )
         prob_units = dfcool.sum(axis=0)
         prob_phns = dfcool.sum(axis=1)
+
+        # sort by phoneme marginal probability
+        df_by_phn = dfcool.T[prob_phns.sort_values(ascending=False).index.tolist()].T
+        # sort unit by argmax of each phoneme
+        phn_star_of_unit = df_by_phn.idxmax(axis=0)
+        prob_phn_star_of_unit = df_by_phn.max(axis=0)
+        # sort by phn_star_of_unit and prob_phn_star_of_unit if needed
+
+
+        # get rank of each phn according to marginal probability
+        rank_of_phn = prob_phns.rank(ascending=False)
+        # get rank of each unit according to argmax of each phn and prob (if needed)
+        rank_of_unit2 = phn_star_of_unit.apply(
+            lambda x: 100-rank_of_phn[x]) + prob_phn_star_of_unit / 100
+        # + prob_phn_star_of_unit[x] / 100
+        # )
+        # check
+        # sort by rank_of_unit2
+        df_by_phn = df_by_phn.loc[:, rank_of_unit2.sort_values(ascending=False).index]
+        # df_by_phn = df_by_phn.loc[:, phn_star_of_unit.sort_values().index]
+
+            
+        # df_by_phn = p_xy
+        # get p(y|x)
+        # st.write(df_by_phn.shape)
+        # st.write(df_by_phn.sum(axis=0).shape)
+        df_by_phn = df_by_phn.div(
+            df_by_phn.sum(axis=0), axis=1)
+        
+        plot_heatmap(
+            df_by_phn,
+            # vmin=0.0, vmax=0.025,
+        )
+
+
 
         plot_barplot__series(
             prob_units,
@@ -375,6 +416,10 @@ if __name__ == "__main__":
             dfcool.values,
             resultgrouping,
             PHONETIC_GROUP_NUMS,
+        )
+        st.write(
+            "Phone group purity:",
+            (confusion_matrix * np.eye(*confusion_matrix.shape)).sum()
         )
 
         plot_heatmap(
