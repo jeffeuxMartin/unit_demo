@@ -740,6 +740,19 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
         annotated=True,
     )
 
+    confusion_matrix__cond0 = np.divide(
+        confusion_matrix,
+        confusion_matrix.sum(axis=0, keepdims=True),
+    )
+    plot_heatmap(
+        pd.DataFrame(
+            confusion_matrix__cond0,
+            index=PHONETIC_GROUPS,
+            columns=PHONETIC_GROUPS,
+        ),
+        annotated=True,
+    )
+
 
 
     # return p_xy
