@@ -470,6 +470,8 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
                     x_groups=HYP_PHONETIC_GROUP_NUMS if SORTING_option == "by phonology" else None,
                     y_groups=PHONETIC_GROUP_NUMS if SORTING_option == "by phonology" else None, 
                     horizontal_highlighted=True if SORTING_option == "by phonology" else False,
+                    vmin=0,
+                    vmax=0.025 if heatmap_cond == "joint" else 1,
                  )
     # plot_heatmap(df_sorted)
     # phn_prob = arrays["phn_prob"]
