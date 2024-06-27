@@ -290,7 +290,33 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
                          domain_knowledge_df,
                          data,
                          ):
-    domain_knowledge_df = "./knowledge_table.tsv"
+    kn_opt = st.selectbox(
+        "knowledge type",
+        [
+            "haotang",
+            "modified_alphabetical",
+            "sonorant",
+            "alphabetical",
+        ],
+    )
+    if kn_opt == "alphabetical":
+        domain_knowledge_df = "./knowledge_table.tsv"
+    elif kn_opt == "sonorant":
+        domain_knowledge_df = "./knowledge_table__phon.tsv"
+    elif kn_opt == "modified_alphabetical":
+        domain_knowledge_df = "./knowledge_table__jeff.tsv"
+    elif kn_opt == "haotang":
+        domain_knowledge_df = "./knowledge_table__hao.tsv"
+    
+    heatmap_cond = st.selectbox(
+        "Heatmap conditional",
+        [
+            "phn given unit",
+            "joint",
+            "unit given phn",
+        ],
+
+    )
 
     knowledge_data = pd.read_csv(
         domain_knowledge_df, sep="\t"
@@ -339,10 +365,13 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
         hide_index=True,
         )
 
+
     df = pd.DataFrame(
-        # p_xy__ndarray, 
-        p_xy__calculated["matrices"]["phn_given_unit"],
-        # p_xy__calculated["matrices"]["unit_given_phn"],
+        {
+            "joint": p_xy__ndarray, 
+            "unit given phn": p_xy__calculated["matrices"]["unit_given_phn"],
+            "phn given unit": p_xy__calculated["matrices"]["phn_given_unit"],
+        }[heatmap_cond],
         columns=xlabel, index=ylabel)
     dfxy = pd.DataFrame(
         p_xy__ndarray,
@@ -378,8 +407,8 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
     SORTING_option = st.selectbox(
         "Sort by",
         [
-         "by probability", 
          "by phonology", 
+         "by probability", 
          "by entropy", 
          "alphabetical",
          ],
@@ -681,12 +710,30 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
         PHONETIC_GROUP_NUMS,
     )
     st.write(
-        "Phone group purity:",
-        (confusion_matrix * np.eye(*confusion_matrix.shape)).sum()
+        "Phone group accuracy:",
+        np.round(
+            (confusion_matrix * np.eye(*confusion_matrix.shape)).sum() * 100,
+            2
+        ),
+        "%",
     )
     plot_heatmap(
         pd.DataFrame(
             confusion_matrix,
+            index=PHONETIC_GROUPS,
+            columns=PHONETIC_GROUPS,
+        ),
+        annotated=True,
+    )
+
+
+    confusion_matrix__cond = np.divide(
+        confusion_matrix,
+        confusion_matrix.sum(axis=1, keepdims=True),
+    )
+    plot_heatmap(
+        pd.DataFrame(
+            confusion_matrix__cond,
             index=PHONETIC_GROUPS,
             columns=PHONETIC_GROUPS,
         ),
