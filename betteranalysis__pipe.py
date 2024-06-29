@@ -95,21 +95,40 @@ def load_data(
 
 def parse_urlargs():
     urlmodeltype = st.query_params.get('modeltype', 'hubert')
-    inmymodeltype = st.text_input('modeltype', urlmodeltype)
+    # inmymodeltype = st.text_input('modeltype', urlmodeltype)
+    inmymodeltype = st.sidebar.selectbox('modeltype', [
+        "hubert",
+        'w2v2',
+        'cpc',
+        'logmel',
+    ])
     if inmymodeltype != urlmodeltype:
         st.query_params['modeltype']=inmymodeltype
         urlmodeltype = inmymodeltype
     mymodeltype = urlmodeltype
 
     urlclu = st.query_params.get('clu', '100')
-    inmyclu = st.text_input('clu', urlclu)
+    # inmyclu = st.text_input('clu', urlclu)
+    # inmyclu_new = st.selectbox('clu', ['100', '500', '1000', '2000', '5000', '10000'])
+    # inmyclu = st.selectbox('clu', ['100', '500', '1000', '2000', '5000', '10000'], index=[0,1,2,3,4,5][int(urlclu)//100])
+    inmyclu = st.sidebar.selectbox('clu', [str(item) for item in [
+        50,
+        100,
+        200,
+    ]])
+    # select clu if urlclu selected
     if inmyclu != urlclu:
         st.query_params['clu']=inmyclu
         urlclu = inmyclu
     clu = int(urlclu)
 
     urlpiece = st.query_params.get('piece', "None")
-    inmypiece = st.text_input('piece', urlpiece)
+    # inmypiece = st.text_input('piece', urlpiece)
+    inmypiece = st.sidebar.selectbox('piece', [str(item) for item in [
+        "None",
+        *([100] if clu == 50 else []),
+        500, 1000, 8000, 10000, 20000,
+    ]])
     if inmypiece != urlpiece:
         st.query_params['piece']=inmypiece
         urlpiece = inmypiece
@@ -117,13 +136,17 @@ def parse_urlargs():
 
     if "triphone implemented":
         urltriphone = st.query_params.get('triphone', 'False')
-        inmytriphone = st.text_input('triphone', urltriphone)
+        # inmytriphone = st.text_input('triphone', urltriphone)
+        inmytriphone = st.sidebar.checkbox('triphone', urltriphone == 'True')
         if inmytriphone != urltriphone:
             st.query_params['triphone']=inmytriphone
             urltriphone = inmytriphone
         mytriphone = (urltriphone == 'True')
     else:
         mytriphone = False
+
+    st.sidebar.markdown(" --- ")
+
     return mymodeltype, clu, mypiece, mytriphone
 # endregion
 
@@ -351,7 +374,7 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
                          domain_knowledge_df,
                          data,
                          ):
-    kn_opt = st.selectbox(
+    kn_opt = st.sidebar.selectbox(
         "knowledge type",
         [
             "haotang",
@@ -369,7 +392,7 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
     elif kn_opt == "haotang":
         domain_knowledge_df = "./knowledge_table__hao.tsv"
     
-    heatmap_cond = st.selectbox(
+    heatmap_cond = st.sidebar.selectbox(
         "Heatmap conditional",
         [
             "phn given unit",
@@ -465,7 +488,7 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
     # plot_heatmap(df)
 
     # Step 1: Sort stat_phns by 'prob' and get the sorted indices
-    SORTING_option = st.selectbox(
+    SORTING_option = st.sidebar.selectbox(
         "Sort by",
         [
          "by phonology", 
@@ -823,15 +846,33 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
 # endregion
 
 # region --- Main ---
+
+def wrapit():
+    # add a selector on the sidebar
+    nouse = st.sidebar.selectbox(
+        "Select a model",
+        [
+            "hubert",
+            'w2v2',
+            'cpc',
+            'logmel',
+        ],
+    )
+
+
+    st.markdown(" # No use selector above = " + nouse)
+    # add a separator
+
+# wrapit()
 modeltype, unit_num, piece_vocab, is_triphone = parse_urlargs()
 data = load_data(modeltype, unit_num, piece_vocab, is_triphone)
 # st.markdown(f"# APiece hub50 ac1000")
 # st.markdown(f"# {modeltype} --> {unit_num:3d} clusters")
 if piece_vocab is not None:
     # TODO: triphone
-    st.markdown(f"# {modeltype} --> {unit_num:3d} clusters --> {piece_vocab} acoustic pieces")
+    st.markdown(f"## {modeltype} --> {unit_num:3d} clusters --> {piece_vocab} acoustic pieces")
 else:
-    st.markdown(f"# {modeltype} --> {unit_num:3d} clusters")
+    st.markdown(f"## {modeltype} --> {unit_num:3d} clusters")
 
 # x as unit / hyp
 # y as phone / ref
