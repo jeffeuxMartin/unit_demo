@@ -61,13 +61,37 @@ def calculate_pxy(
 def load_data(
     model_type: str = "hubert",
     cluster_num: int = 100,
+    piece_vocab = None,
+    triphone = False,
 ):
-    return np.load(
-        "./analysis_data/"
-       f"{model_type}/"
-       f"clu{cluster_num:03d}/"
-        "train-clean-100.npz"
-    )
+    if piece_vocab is None:  # single unit
+        return np.load(
+            "./analysis_data/"
+            "singleunit{istriphone}/"
+        f"{model_type}/"
+        f"clu{cluster_num:03d}/"
+            "train-clean-100.npz"
+            .format(
+                istriphone = (""  # normal phoneme
+                    if not triphone else 
+                    "_triphone"),
+            )
+        )
+    else:
+        return np.load(
+            "./analysis_data/"
+            "acousticpiece{istriphone}/"
+        f"{model_type}/"
+        f"clu{cluster_num:03d}/"
+        f"apvocab{int(piece_vocab):05d}/"
+            "train-clean-100.npz"
+            .format(
+                istriphone = (""
+                    if not triphone else 
+                    "_triphone"),
+            )
+        )
+
 
 def parse_urlargs():
     urlmodeltype = st.query_params.get('modeltype', 'hubert')
@@ -83,7 +107,24 @@ def parse_urlargs():
         st.query_params['clu']=inmyclu
         urlclu = inmyclu
     clu = int(urlclu)
-    return mymodeltype, clu
+
+    urlpiece = st.query_params.get('piece', "None")
+    inmypiece = st.text_input('piece', urlpiece)
+    if inmypiece != urlpiece:
+        st.query_params['piece']=inmypiece
+        urlpiece = inmypiece
+    mypiece = urlpiece if urlpiece != "None" else None
+
+    if "triphone implemented":
+        urltriphone = st.query_params.get('triphone', 'False')
+        inmytriphone = st.text_input('triphone', urltriphone)
+        if inmytriphone != urltriphone:
+            st.query_params['triphone']=inmytriphone
+            urltriphone = inmytriphone
+        mytriphone = (urltriphone == 'True')
+    else:
+        mytriphone = False
+    return mymodeltype, clu, mypiece, mytriphone
 # endregion
 
 # region --- Plotting ---
@@ -118,17 +159,26 @@ def plot_heatmap(
         **options,
     )
 
-    axis.set_xticks(
-        np.arange(df.shape[1]) + 0.5,
-        minor = False,
-    )
-    axis.set_xticklabels(
-        df.columns,
-        rotation=75 if df.shape[1] <= 100 else 90,
-        fontsize=12 if df.shape[1] <= 100 else 6,
-        # horizontalalignment='right',
-        minor = False,  # each 1
-    )
+    if df.shape[1] <= 1000:
+        axis.set_xticks(
+            np.arange(df.shape[1]) + 0.5,
+            minor = False,
+        )
+        axis.set_xticklabels(
+            df.columns,
+            rotation=75 if df.shape[1] <= 100 else 90,
+            fontsize=12 if df.shape[1] <= 100 else 6,
+            # horizontalalignment='right',
+            minor = False,  # each 1
+        )
+    else:
+        # hide xticks by replace with empty string
+        pass
+        axis.set_xticks([])
+        axis.set_xticklabels([])
+        # FIXME: still cannot 留白
+
+
     axis.set_yticks(
         np.arange(df.shape[0]) + 0.5,
         minor = False,
@@ -214,12 +264,23 @@ def plot_barplot__series(
         plt.bar(ser.index, ser.values, color=color)
     elif toolkit == 'seaborn':
         if not horizontal:
-            sns.barplot(
-                x=ser.index,
-                y=ser.values,
-                ax=ax,
-                color=color,
-            )
+            # hide xticks if too many
+            if ser.shape[0] <= 100:
+                sns.barplot(
+                    x=ser.index,
+                    y=ser.values,
+                    ax=ax,
+                    color=color,
+                )
+            else:
+                sns.barplot(
+                    x=ser.index,
+                    y=ser.values,
+                    ax=ax,
+                    color=color,
+                )
+                ax.set_xticks([])
+                ax.set_xticklabels([])
         else:
             sns.barplot(
                 y=ser.index,
@@ -762,14 +823,15 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
 # endregion
 
 # region --- Main ---
-modeltype, unit_num = parse_urlargs()
-data = load_data(modeltype, unit_num)
-@st.cache_resource
-def loadtriphone(pathname):
-    return np.load(pathname)
-# data = loadtriphone(
-#     '../mymeasure/tri_hubert_100.npz')
-st.markdown(f"# {modeltype} --> {unit_num:3d} clusters")
+modeltype, unit_num, piece_vocab, is_triphone = parse_urlargs()
+data = load_data(modeltype, unit_num, piece_vocab, is_triphone)
+# st.markdown(f"# APiece hub50 ac1000")
+# st.markdown(f"# {modeltype} --> {unit_num:3d} clusters")
+if piece_vocab is not None:
+    # TODO: triphone
+    st.markdown(f"# {modeltype} --> {unit_num:3d} clusters --> {piece_vocab} acoustic pieces")
+else:
+    st.markdown(f"# {modeltype} --> {unit_num:3d} clusters")
 
 # x as unit / hyp
 # y as phone / ref
