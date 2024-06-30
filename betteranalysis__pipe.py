@@ -178,7 +178,7 @@ def plot_heatmap(
     axis = sns.heatmap(
         df,
         ax=ax,
-        cmap="YlGnBu",
+        cmap="Greys",
         **options,
     )
 
@@ -495,8 +495,8 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
     SORTING_option = st.sidebar.selectbox(
         "Sort by",
         [
-         "by phonology", 
          "by probability", 
+         "by phonology", 
          "by entropy", 
          "alphabetical",
          ],
