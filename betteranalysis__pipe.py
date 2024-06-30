@@ -219,6 +219,9 @@ def plot_heatmap(
                 axis.axvline(pos, color='r', linewidth=1, linestyle="-")
             else:
                 axis.axvline(pos, color='blue', linewidth=0.5, linestyle="--")
+    # add horizontal lines anyway first
+    for idx in range(df.shape[0]):
+        axis.axhline(idx, color='black', linewidth=0.2, linestyle="-")
     if y_groups is not None:
         for pos in np.cumsum(y_groups)[:-1]:
             if horizontal_highlighted:
