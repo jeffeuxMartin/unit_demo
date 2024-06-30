@@ -428,6 +428,7 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
     stats.pop("unit_NMI")
     stats.pop("phn_NMI")
     stats["PNMI"] = nmi_y
+    stats['rat'] = data.get('refsegL').tolist()/data.get('hypsegL').tolist()*(0.2007/(4.89354/4.99729))
     if (3-2)*(0+1)+1: 
         st.dataframe(
         pd.DataFrame({"modeltype": modeltype, **stats}, index=[0]),
