@@ -874,9 +874,9 @@ data = load_data(modeltype, unit_num, piece_vocab, is_triphone)
 # st.markdown(f"# {modeltype} --> {unit_num:3d} clusters")
 if piece_vocab is not None:
     # TODO: triphone
-    st.markdown(f"## {modeltype} --> {unit_num:3d} clusters --> {piece_vocab} acoustic pieces")
+    st.markdown(f"## {modeltype} --> {unit_num:3d} clus --> {piece_vocab} acpcs")
 else:
-    st.markdown(f"## {modeltype} --> {unit_num:3d} clusters")
+    st.markdown(f"## {modeltype} --> {unit_num:3d} clus")
 
 # x as unit / hyp
 # y as phone / ref
