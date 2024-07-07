@@ -234,6 +234,7 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
                          data,
                          modeltype: str,
                          ):
+
     kn_opt = st.sidebar.selectbox(
         "knowledge type",
         [
@@ -310,7 +311,6 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
         hide_index=True,
         )
 
-
     df = pd.DataFrame(
         {
             "joint": p_xy__ndarray, 
@@ -344,6 +344,14 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
     stat_phns['phnidx'] = stat_phns.index.map(lookup_phn_to_pi).astype(int)
     stat_units['argmax_cls'] = stat_units['argmax'].map(lookup_phn_to_cls)
     
+    if 0: return       ####################
+                       ####################
+    # st.write(dfxy)   ####################
+                       ####################
+                       ####################
+    # return           ####################
+                       ####################
+
 
 
     # plot_heatmap(df)
@@ -358,6 +366,84 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
          "alphabetical",
          ],
     )
+
+    with st.expander("Phonetic groups", True):
+
+        # xxx_ratio
+        silrat =df_phn_given_unit[stat_phns['cls'] == 'XXX'].sum(axis=0).sum()
+        if 0:st.write(
+            'sil_num: ',
+            silrat,
+        )
+        st.write(
+            'sil_ratio: ',
+            silrat/df_phn_given_unit.values.sum(),
+            # df_phn_given_unit.values.sum()
+            # df_phn_given_unit.sum(axis=0).sum()
+        )
+        if 0:st.write(
+            stat_phns
+        )
+        # group pxy by cls (phonetic group)
+        if 0:st.write(
+            stat_phns.groupby('cls').sum()
+        )
+        if 0:st.write(
+            dfxy)
+        dfxy_cls = dfxy.groupby(stat_phns['cls'], axis=0).sum()
+        if 0:st.write(
+            dfxy_cls
+        )
+        # get purity of dfxy_cls
+        # st.write(dfxy_cls.max(axis=0))
+        # st.write( dfxy_cls.sum(axis=0))
+        # purity = dfxy_cls.max(axis=0) / dfxy_cls.sum(axis=0)
+        pcls_purity = dfxy_cls.max(axis=0).sum()
+        punit_purity = dfxy_cls.max(axis=1).sum()
+        st.write(
+            'purity of cls:',
+            pcls_purity
+        )
+        st.write(
+            'purity of unit in cls:',
+            punit_purity
+        )
+        pass
+        # 可以直接 concat 在 stat_phns 上，之後用表格顯示
+        if 0:st.write(
+            pd.DataFrame(
+                {
+                    "group": PHONETIC_GROUPS,
+                    "num": PHONETIC_GROUP_NUMS,
+                },
+                index=np.arange(1, len(PHONETIC_GROUPS) + 1),
+            )
+        )
+        # st.write(stat_phns)
+        puirt_by_clsss = []
+        for item in PHONETIC_GROUPS:
+            # st.write(
+                # "## Phonetic group: " + item
+            # )
+            xx = stat_phns.loc[stat_phns['cls'] == item]
+            # purity of each phonetic group
+            puirt_by_clsss.append((
+                item,
+
+                xx['max_prob'].sum() / xx['prob'].sum()
+            )
+            )
+        # write in table
+        dtailpur=pd.DataFrame(
+                puirt_by_clsss,
+                columns=['group', 'purity'],
+            ).T
+        # set header
+        dtailpur.columns = dtailpur.iloc[0]
+        dtailpur = dtailpur[1:]
+        st.write(
+            dtailpur)
+
     if SORTING_option == "by probability":
         order_phns = stat_phns.sort_values(by='prob', ascending=False).index
     elif SORTING_option == "by entropy":
@@ -372,13 +458,15 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
     sorted_indices = dict({
         v: k for k, v in enumerate(order_phns)
     })
-    if not not "by phonology":
-        stzt = stat_units['argmax']
+    if "by phonology":
+        reprPhnOfUnits = stat_units['argmax']
+
 
         stat_units['argmax_index_with_prob'] = (
-            stzt.map(sorted_indices) + 1 - stat_units['max_prob']
+            reprPhnOfUnits.map(sorted_indices) + 1 - stat_units['max_prob']
         )
-        order_units = stat_units.sort_values(by='argmax_index_with_prob', ascending=True).index
+        order_units = (
+            stat_units.sort_values(by='argmax_index_with_prob', ascending=True).index)
     else:
         order_units = stat_units.sort_values(by='prob', ascending=False).index
 
@@ -389,7 +477,8 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
     for item in PHONETIC_GROUPS:
         if item not in HYP_PHONETIC_GROUP_NUMS.index:
             HYP_PHONETIC_GROUP_NUMS.loc[item] = 0
-    HYP_PHONETIC_GROUP_NUMS = HYP_PHONETIC_GROUP_NUMS.loc[PHONETIC_GROUPS]['argmax'].tolist()
+    HYP_PHONETIC_GROUP_NUMS = (
+        HYP_PHONETIC_GROUP_NUMS.loc[PHONETIC_GROUPS]['argmax'].tolist())
 
     # if 1: st.write(HYP_PHONETIC_GROUP_NUMS)
     # st.write(order_phns)
@@ -399,8 +488,8 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
     df_aligned_by_orders = df.loc[order_phns, order_units]
     # TODO: y_groups generator
     # find groups accoriding to stzt
-    if 0: st.write(stzt)
-
+    if 0: st.write(reprPhnOfUnits)
+    # st.write(df_aligned_by_orders)
 
 
     # st.write(df_aligned_by_orders)
@@ -412,9 +501,18 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
     # Optionally, plot the heatmap of the sorted df
     plot_heatmap(df_aligned_by_orders,
                     # x_groups=[20,12+1,1,2+2+1+1+1+1+1+1+1+1+1+1+1+1,0+1+1+1+1+1+1+1+1+1+1+1-3,0+1+6+1+3-1,20+4+2,99],
-                    x_groups=HYP_PHONETIC_GROUP_NUMS if SORTING_option == "by phonology" else None,
-                    y_groups=PHONETIC_GROUP_NUMS if SORTING_option == "by phonology" else None, 
-                    horizontal_highlighted=True if SORTING_option == "by phonology" else False,
+                    x_groups=(
+                        HYP_PHONETIC_GROUP_NUMS
+                        if SORTING_option == "by phonology" else
+                        None),
+                    y_groups=(
+                        PHONETIC_GROUP_NUMS
+                        if SORTING_option == "by phonology" else
+                        None),
+                    horizontal_highlighted=(
+                        True
+                        if SORTING_option == "by phonology" else
+                        False),
                     vmin=0,
                     vmax=0.025 if heatmap_cond == "joint" else 1,
                  )
@@ -544,6 +642,18 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
 
     # combine the above into a single table
     st.write("## 每個 unit 的 top 5 phonemes")
+    def jeffcolormap(x):
+        # print(x)
+        return dict(
+            XXX='black',
+            PLO='blue',
+            FRI='green',
+            VOW='red',
+            NAS='purple',
+            AFF='orange',
+            DIP='brown',
+            APP='cyan',
+        ).get(x, 'black')
 
     t1=(
         df_aligned_by_orders.apply(
@@ -569,6 +679,8 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
     t3 = t1.applymap(lookup_phn_to_cls.get)
 
     zcombined_df = pd.DataFrame()
+    zout = pd.DataFrame()
+    zcls = pd.DataFrame()
 
     for rankid in range(5):
         if rankid == 0:
@@ -578,8 +690,34 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
         zcombined_df[f"unit_{rankid + 1}"] = t1.iloc[:, rankid]
         zcombined_df[f"prob_{rankid + 1}"] = t2.iloc[:, rankid]
         zcombined_df[f"cls_{rankid + 1}" ] = t3.iloc[:, rankid]
+        # zcombined_df['test'] = zcombined_df['unit_5'] + ' (' + zcombined_df['cls_5'] + ")"
+        # zout[f'rank {rankid + 1}'] = zcombined_df[f'unit_{rankid + 1}'] + ' (' + zcombined_df[f'cls_{rankid + 1}'] + ')'
+        zout[f'rank {rankid + 1}'] = zcombined_df[f'unit_{rankid + 1}']
+        # zout[f'cls {rankid + 1}'] = zcombined_df[f'cls_{rankid + 1}']
+        zcls[f'rank {rankid + 1}'] = zcombined_df[f'cls_{rankid + 1}']
 
-    st.write(zcombined_df)
+
+    if 0:st.write(zcombined_df)
+    # st.write(zout.T)
+    # color zout by cls
+    # zoutgood = zout.style.applymap(lambda x: f"color: {jeffcolormap(x)}").T
+    # z__color = zcls.applymap(lambda x: f"color: {jeffcolormap(x)}")
+    def color_based_on_phn(val, x):
+        return f"color: {jeffcolormap(lookup_phn_to_cls.get(val))}"
+    # zclsgood = zcls.style.applymap(lambda x: f"color: {jeffcolormap(x)}").T
+    def apply_color(row, df2):
+        return [
+            color_based_on_phn(val, df2.loc[row.name, col])
+            for col, val in row.items()
+
+        ]
+    zoutgood = zout.T.style.apply(apply_color, df2=zcls.T, axis=1)
+    st.write(zoutgood)
+    #############
+
+    # st.write(zcombined_df.T)
+
+
     st.write("## 每個 phoneme 的 top 5 units")
 
 
@@ -604,18 +742,36 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
     tt3.index = df_aligned_by_orders.index
 
     newcombined = pd.DataFrame()
+    ttout = pd.DataFrame()
     newcombined.index = df_aligned_by_orders.index
     newcombined['pid'] = df_aligned_by_orders.index.map(lookup_phn_to_pi)
     newcombined['cls'] = df_aligned_by_orders.index.map(lookup_phn_to_cls)
     # newcombined[f"cls_{0}" ] = tt3
     # newcombined['a'+str(77) ] = df_aligned_by_orders.index.map(lookup_phn_to_cls)
+    ttout['cls'] = newcombined['cls']
     for rankid in range(5):
         newcombined[str(rankid+1) ] = "|"
         newcombined[f"phn_{rankid + 1}" ] = tt1.iloc[ :, rankid]
         newcombined[f"prob_{rankid + 1}"] = tt2.iloc[ :, rankid]
+        ttout[f'rank {rankid + 1}'] = newcombined[f'phn_{rankid + 1}']
     # newcombined[str(1) ] = ""
     # newcombined[str(66) ] = df_aligned_by_orders.index.map(lookup_phn_to_cls)
-    st.write(newcombined)
+    # st.write(newcombined)
+    IIP = lambda x: lookup_phn_to_pi.get(x)
+    # st.write(
+    ttout['myidx'] = (
+        (ttout.index).map(IIP)
+    )
+    # )
+    # ttout.sort_index(key=IIP, inplace=True)
+    # ttout.sort_index(key=lambda x: lookup_phn_to_pi.get(x), inplace=True)
+    # ttout
+    ttout.sort_values(by='myidx', inplace=True)
+    ttout.drop(columns='myidx', inplace=True)
+    ttoutT = ttout.T
+
+    # st.write(ttout)
+    st.write(ttoutT)
 
 
     visualize_phn = st.selectbox(
@@ -705,3 +861,12 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
     # return p_xy
 
 # endregion
+# # fake table
+# df = pd.DataFrame(p_xy__ndarray, columns=xlabel, index=ylabel)
+# # text color
+# st.dataframe(
+#     df.style.applymap(
+#         lambda cell: 'color: red' if cell > 0.0005 else 'color: black'
+#     )
+# )
+# return
