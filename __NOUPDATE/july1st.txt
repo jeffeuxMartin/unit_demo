@@ -1,0 +1,22 @@
+B b --> BRITISH
+R r --> RACKET (球拍)
+P p --> PRINCE
+======================
+E e --> EAGLE
+Σ σ --> SEAL
+======================
+N n --> NORTHWEST
+W w --> WASHINGTON
+======================
+D d --> DIRECT
+======================
+C c --> CON (針對)
+S s --> STING (刺)
+U u --> USHER
+H h --> HUSTLE
+======================
+G g --> GUIDE
+L l --> LEAD
+======================
+И и --> NOVA
+Π π --> PYRAMID
