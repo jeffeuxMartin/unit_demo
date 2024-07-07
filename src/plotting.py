@@ -645,14 +645,14 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
     def jeffcolormap(x):
         # print(x)
         return dict(
-            XXX='black',
-            PLO='blue',
-            FRI='green',
+            XXX='gray',
+            PLO='cyan',
+            AFF='#19e697',
+            FRI='lime',
+            NAS='yellow',
+            APP='orange',
             VOW='red',
-            NAS='purple',
-            AFF='orange',
-            DIP='brown',
-            APP='cyan',
+            DIP='#19e697',
         ).get(x, 'black')
 
     t1=(
@@ -693,8 +693,12 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
         # zcombined_df['test'] = zcombined_df['unit_5'] + ' (' + zcombined_df['cls_5'] + ")"
         # zout[f'rank {rankid + 1}'] = zcombined_df[f'unit_{rankid + 1}'] + ' (' + zcombined_df[f'cls_{rankid + 1}'] + ')'
         zout[f'rank {rankid + 1}'] = zcombined_df[f'unit_{rankid + 1}']
+        if rankid == 0:
+            zout[f'\u3000'] = '-'
         # zout[f'cls {rankid + 1}'] = zcombined_df[f'cls_{rankid + 1}']
         zcls[f'rank {rankid + 1}'] = zcombined_df[f'cls_{rankid + 1}']
+        if rankid == 0:
+            zcls[f'\u3000'] = '-'
 
 
     if 0:st.write(zcombined_df)
@@ -712,6 +716,10 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
 
         ]
     zoutgood = zout.T.style.apply(apply_color, df2=zcls.T, axis=1)
+    def apply_bold_line_between_rows(s):
+        # 为第一行和第二行之间的单元格添加边框样式
+        return ['border-bottom: 2px solid black' if i == 1 else '' for i in range(len(s))]
+    zoutgood = zoutgood.apply(apply_bold_line_between_rows, axis=0)
     st.write(zoutgood)
     #############
 
