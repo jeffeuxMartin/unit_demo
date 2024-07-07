@@ -652,7 +652,7 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
             NAS='yellow',
             APP='orange',
             VOW='red',
-            DIP='#19e697',
+            DIP='#eb34a8',
         ).get(x, 'black')
 
     t1=(
