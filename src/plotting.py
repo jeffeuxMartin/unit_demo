@@ -646,10 +646,10 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
         # print(x)
         return dict(
             XXX='gray',
-            PLO='cyan',
-            AFF='#19e697',
-            FRI='lime',
-            NAS='yellow',
+            PLO='blue', #'cyan',
+            AFF='#19e697',  # '#19e697',
+            FRI='green', #'#4db368', # 'lime',
+            NAS='#dd0', # '#c9c54b', #'yellow',
             APP='orange',
             VOW='red',
             DIP='#eb34a8',
@@ -694,11 +694,13 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
         # zout[f'rank {rankid + 1}'] = zcombined_df[f'unit_{rankid + 1}'] + ' (' + zcombined_df[f'cls_{rankid + 1}'] + ')'
         zout[f'rank {rankid + 1}'] = zcombined_df[f'unit_{rankid + 1}']
         if rankid == 0:
-            zout[f'\u3000'] = '-'
+            # zout[f'\u3000'] = ' '
+            zout[f' '] = ' '
         # zout[f'cls {rankid + 1}'] = zcombined_df[f'cls_{rankid + 1}']
         zcls[f'rank {rankid + 1}'] = zcombined_df[f'cls_{rankid + 1}']
         if rankid == 0:
-            zcls[f'\u3000'] = '-'
+            # zcls[f'\u3000'] = ' '
+            zcls[f' '] = ' '
 
 
     if 0:st.write(zcombined_df)
