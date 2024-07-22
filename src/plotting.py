@@ -351,7 +351,8 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
                        ####################
     # return           ####################
                        ####################
-
+    st.write(stat_units)
+    st.write(stat_phns)
 
 
     # plot_heatmap(df)
@@ -443,6 +444,41 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
         dtailpur = dtailpur[1:]
         st.write(
             dtailpur)
+        
+        ##### %%%
+        puirt_by_clsssReal = []
+
+
+
+
+
+
+        for item in PHONETIC_GROUPS:
+            # st.write(
+                # "## Phonetic group: " + item
+            # )
+            v1 = dfxy.loc[dfxy.index.map(lookup_phn_to_cls) == item]
+            subsum = v1.values.sum()
+            
+            rr = (
+                v1.max(axis=0).sum() / subsum
+            )
+            puirt_by_clsssReal.append((
+                item,
+
+                rr
+            )
+            )
+        # write in table
+        dtailpurReal=pd.DataFrame(
+                puirt_by_clsssReal,
+                columns=['group', 'purity'],
+            ).T
+        # set header
+        dtailpurReal.columns = dtailpurReal.iloc[0]
+        dtailpurReal = dtailpurReal[1:]
+        st.write(
+            dtailpurReal)
 
     if SORTING_option == "by probability":
         order_phns = stat_phns.sort_values(by='prob', ascending=False).index
@@ -864,6 +900,11 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
             columns=PHONETIC_GROUPS,
         ),
         annotated=True,
+    )
+
+
+    st.write(
+        df_aligned_by_orders
     )
 
 
