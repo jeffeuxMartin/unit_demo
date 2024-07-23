@@ -351,8 +351,13 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
                        ####################
     # return           ####################
                        ####################
-    st.write(stat_units)
-    st.write(stat_phns)
+    with st.expander("More", False):
+        st.write(stat_units.sort_values('entropy', ascending=False))
+        st.write(stat_phns.sort_values('entropy', ascending=False))
+
+        st.write(stat_units.sort_values('entropy', ascending=True))
+        st.write(stat_phns.sort_values('entropy', ascending=True))
+
 
 
     # plot_heatmap(df)
@@ -437,7 +442,7 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
         # write in table
         dtailpur=pd.DataFrame(
                 puirt_by_clsss,
-                columns=['group', 'purity'],
+                columns=['group', 'clu_pu'],
             ).T
         # set header
         dtailpur.columns = dtailpur.iloc[0]
@@ -447,6 +452,7 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
         
         ##### %%%
         puirt_by_clsssReal = []
+        mimibyreal = []
 
 
 
@@ -463,22 +469,59 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
             rr = (
                 v1.max(axis=0).sum() / subsum
             )
+            # st.write(
+            #     v1.max(axis=1).sum() / subsum
+            # )
+            if 0:st.write(
+                v1.values.sum(), subsum
+            )
+            if 0:st.write(
+                v1.sum(1) / subsum
+            )
+            v2 = (v1 / subsum).values
+            subspace_phn_ent = entropy(
+                    v2.sum(1)
+                )
+            mi=(
+                entropy(
+                    v2.sum(0)
+                ) + entropy(
+                    v2.sum(1)
+                ) - entropy(
+                    v2
+
+                )
+            )
+            pnmihere = mi / subspace_phn_ent
             puirt_by_clsssReal.append((
                 item,
 
                 rr
             )
             )
+            mimibyreal.append((
+                item,
+                pnmihere
+            ))
         # write in table
         dtailpurReal=pd.DataFrame(
                 puirt_by_clsssReal,
-                columns=['group', 'purity'],
+                columns=['group', 'phn_pu'],
             ).T
         # set header
         dtailpurReal.columns = dtailpurReal.iloc[0]
         dtailpurReal = dtailpurReal[1:]
         st.write(
             dtailpurReal)
+        dtailpnmiReal=pd.DataFrame(
+                mimibyreal,
+                columns=['group', 'PNMI'],
+            ).T
+        # set header
+        dtailpnmiReal.columns = dtailpnmiReal.iloc[0]
+        dtailpnmiReal = dtailpnmiReal[1:]
+        st.write(
+            dtailpnmiReal)
 
     if SORTING_option == "by probability":
         order_phns = stat_phns.sort_values(by='prob', ascending=False).index
