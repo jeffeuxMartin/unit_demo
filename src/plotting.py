@@ -649,9 +649,9 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
             weight='bold', size=12,
             # fontsize=12, fontdict={'family': 'DFKai-SB', 'weight': 'bold'})
         )
-        plt.xlabel('音素熵', fontproperties=kai_font)
+        plt.xlabel('音位熵', fontproperties=kai_font)
         plt.ylabel('數量', fontproperties=kai_font)
-        plt.title('音素熵分布', fontproperties=kai_font)
+        plt.title('音位熵分布', fontproperties=kai_font)
         plt.xlim(0, None)
         st.pyplot(fig)
         plt.close(fig)
