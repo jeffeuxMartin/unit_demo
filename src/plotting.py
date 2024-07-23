@@ -369,10 +369,14 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
     # return           ####################
                        ####################
     with st.expander("More", False):
+        st.markdown("#### 最亂 unit")
         st.write(stat_units.sort_values('entropy', ascending=False))
+        st.markdown("#### 最亂 phn")
         st.write(stat_phns.sort_values('entropy', ascending=False))
 
+        st.markdown("#### 最好 unit")
         st.write(stat_units.sort_values('entropy', ascending=True))
+        st.markdown("#### 最好 phn")
         st.write(stat_phns.sort_values('entropy', ascending=True))
 
 

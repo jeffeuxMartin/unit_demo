@@ -18,8 +18,10 @@ if __name__ == "__main__":
     if piece_vocab is not None:
         # TODO: triphone
         st.markdown(f"## {modeltype} --> {unit_num:3d} clus --> {piece_vocab} acpcs")
+        st.sidebar.markdown(f"## {modeltype} --> {unit_num:3d} clus --> {piece_vocab} acpcs")
     else:
         st.markdown(f"## {modeltype} --> {unit_num:3d} clus")
+        st.sidebar.markdown(f"## {modeltype} --> {unit_num:3d} clus")
 
     # x as unit / hyp
     # y as phone / ref
