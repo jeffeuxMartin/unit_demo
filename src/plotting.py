@@ -134,6 +134,7 @@ def plot_barplot__series(
     label = None,
     horizontal = False,
     color = None,
+    tonorm=None,
     **kwargs,
 ):
     plt.clf()
@@ -163,6 +164,14 @@ def plot_barplot__series(
                 )
                 ax.set_xticks([])
                 ax.set_xticklabels([])
+            # st.write(kwargs)
+            if tonorm is not None: plt.ylim(0, 1)
+            if 'title' in kwargs:
+                plt.title(kwargs['title'], fontproperties=kwargs.get('tfp'))
+            if 'xtitle' in kwargs:
+                plt.xlabel(kwargs['xtitle'], fontproperties=kwargs.get('xfp'))
+            if 'ytitle' in kwargs:
+                plt.ylabel(kwargs['ytitle'], fontproperties=kwargs.get('yfp'))
         else:
             sns.barplot(
                 y=ser.index,
@@ -170,6 +179,14 @@ def plot_barplot__series(
                 ax=ax,
                 color=color,                
             )
+            # st.write(kwargs)
+            if tonorm is not None: plt.xlim(0, 1)
+            if 'title' in kwargs:
+                plt.title(kwargs['title'], fontproperties=kwargs.get('tfp'))
+            if 'xtitle' in kwargs:
+                plt.xlabel(kwargs['xtitle'], fontproperties=kwargs.get('xfp'))
+            if 'ytitle' in kwargs:
+                plt.ylabel(kwargs['ytitle'], fontproperties=kwargs.get('yfp'))
     else:
         raise ValueError(f"Unknown toolkit: {toolkit}")
     
@@ -638,9 +655,9 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
     h_units = stat_units.loc[order_units]['entropy']
     # histo = np.histogram(h_units, bins=10)
     # st.write(histo)
-    if 3-2:
+    with st.expander("Cnt", False):
         fig = plt.figure(figsize=(10, 5))
-        sns.histplot(h_units, bins=20,
+        sns.histplot(h_units, bins=25,
                     #  kde=True,
                      )
         from matplotlib.font_manager import FontProperties
@@ -652,7 +669,29 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
         plt.xlabel('音位熵', fontproperties=kai_font)
         plt.ylabel('數量', fontproperties=kai_font)
         plt.title('音位熵分布', fontproperties=kai_font)
-        plt.xlim(0, None)
+        # plt.xlim(0, None)
+        plt.xlim(0, 3.5)
+        st.pyplot(fig)
+        plt.close(fig)
+    with st.expander("Portion", True):
+        fig = plt.figure(figsize=(10, 5))
+        sns.histplot(h_units, bins=25,
+                     stat='probability',
+
+                    #  kde=True,
+                     )
+        from matplotlib.font_manager import FontProperties
+        kai_font = FontProperties(
+            fname='./fonts/BiauKai.ttf',
+            weight='bold', size=12,
+            # fontsize=12, fontdict={'family': 'DFKai-SB', 'weight': 'bold'})
+        )
+        plt.xlabel('音位熵', fontproperties=kai_font)
+        plt.ylabel('比例', fontproperties=kai_font)
+        plt.title('音位熵分布', fontproperties=kai_font)
+        # plt.xlim(0, None)
+        plt.xlim(0, 3.5)
+        plt.ylim(0, 0.2)
         st.pyplot(fig)
         plt.close(fig)
     # plot_barplot__series(
@@ -885,16 +924,33 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
         st.write(f"Entropy: {entropy_this_phn:.4f}")
         plot_barplot__series(
             df_unit_given_phn[order_units].loc[visualize_phn],
-            # title="Phoneme given unit",
+            tonorm=True,
+            title="Unit given phn",
+            xtitle="Unit given phn",
         )
+        # plt.ylim(0, 1)
+        # st.write(df_unit_given_phn[order_units].loc[visualize_phn].sum())
     if 3-2:
+        from matplotlib.font_manager import FontProperties
+        kai_font = FontProperties(
+            fname='./fonts/BiauKai.ttf',
+            weight='bold', size=12,
+            # fontsize=12, fontdict={'family': 'DFKai-SB', 'weight': 'bold'})
+        )
         st.write(f"## Unit: {visualize_unit}")
         prob_this_unit = prob_units.loc[visualize_unit]
         entropy_this_unit = stat_units.loc[visualize_unit]['entropy']
         st.write(f"Probability: {prob_this_unit:.4f}")
         st.write(f"Entropy: {entropy_this_unit:.4f}")
         plot_barplot__series(
-            df_phn_given_unit[visualize_unit].loc[order_phns])
+            df_phn_given_unit[visualize_unit].loc[order_phns],
+            tonorm=True,
+            title="Phoneme given unit",
+            xtitle="音位",
+            xfp=kai_font,
+        )
+
+        # plt.xlabel('音位在單元', fontproperties=kai_font)
         
     confusion_matrix = get_confusion_matrix(
         dfxy[order_units].loc[order_phns].values,
@@ -932,18 +988,22 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
         annotated=True,
     )
 
-    confusion_matrix__cond0 = np.divide(
-        confusion_matrix,
-        confusion_matrix.sum(axis=0, keepdims=True),
-    )
-    plot_heatmap(
-        pd.DataFrame(
-            confusion_matrix__cond0,
-            index=PHONETIC_GROUPS,
-            columns=PHONETIC_GROUPS,
-        ),
-        annotated=True,
-    )
+    try:
+        confusion_matrix__cond0 = np.divide(
+            confusion_matrix,
+            confusion_matrix.sum(axis=0, keepdims=True),
+        )
+
+        plot_heatmap(
+            pd.DataFrame(
+                confusion_matrix__cond0,
+                index=PHONETIC_GROUPS,
+                columns=PHONETIC_GROUPS,
+            ),
+            annotated=True,
+        )
+    except RuntimeWarning as err:
+        st.write('Has Nan')
 
 
     st.write(
