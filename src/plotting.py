@@ -675,6 +675,7 @@ def datalabel_decoration(p_xy__ndarray: np.ndarray,
         plt.title('音位熵分布', fontproperties=kai_font)
         # plt.xlim(0, None)
         plt.xlim(0, 3.5)
+        plt.ylim(0, 7)
         st.pyplot(fig)
         plt.close(fig)
     with st.expander("Portion", True):
